@@ -15,65 +15,76 @@ var counties = svg.append("g")
     .attr("id", "ireland");
 
 
-
-// var slider = d3.select("#slider_holder")
-//   .append("svg")
-//   .attr("height","100px");
-
-
-
 //Irish geoJSON based on https://gist.github.com/2183412
 d3.json("ireland.json", function(json) {
-  counties.selectAll("path")
+  count = counties.selectAll("path")
       .data(json.features)
     .enter().append("path")
       .attr("class", "ireland")
       .attr("d", path);
+
+      // counties.on("mouseover", function(d) { alert (d.id); })
 });
  
 
 d3.json("annual_values.json", function(json) {
   data = json;
   counties.selectAll("path")
-      .attr("class", quantize);
+      .attr("class", quantize)
+      .attr("id", function(d){return d.properties.id})
+      // .on("mouseover", function(d) { console.log(d.properties.id + " " + data[d.properties.id][year]); });
+      .on("mouseover", function(d) { console.log(d.properties.id + " " + data[d.properties.id][year]); });
+
 });
  
 function quantize(d) {
   switch (year_key) {
     case 0:
+      window.year = "y2003"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2003 / 5)) + "-9";
       break;
     case 100:
+      window.year = "y2004"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2004 / 5)) + "-9";
       break;
     case 200:
+      window.year = "y2005"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2005 / 5)) + "-9";
       break;
     case 300:
+      window.year = "y2006"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2006 / 5)) + "-9";
       break; 
     case 400:
+      window.year = "y2007"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2007 / 5)) + "-9";
       break; 
     case 500:
+      window.year = "y2008"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2008 / 5)) + "-9";
       break; 
     case 600:
+      window.year = "y2009"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2009 / 5)) + "-9";
       break; 
     case 700:
+      window.year = "y2010"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2010 / 5)) + "-9";
       break; 
     case 800:
+      window.year = "y2011"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2011 / 5)) + "-9";
       break; 
     case 900:
+      window.year = "y2012"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2012 / 5)) + "-9";
       break;  
     case 1000:
+      window.year = "y2013"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2013 / 5)) + "-9";
       break; 
     case 1100:
+      window.year = "y2014"
       return "q" + Math.min(8, ~~(data[d.properties.id].y2014 / 5)) + "-9";
       break; 
 }
@@ -85,7 +96,6 @@ function quantize(d) {
 // var w = 900, h = 500;
 var wBlob = 100;
 var hBlob = 100;
-// var vis = d3.select('body').append('svg:svg').attr('width', w).attr('height', h);
 var data = [{x: 0, y: 0, px: 0, py: 0, col: 0, row: 0, width: wBlob, height: wBlob}, /*{x: 100, y: 0, px: 100, py: 0, col: 1, row: 0, width: wBlob, height: hBlob}*/
            ];
 var helperData = [{}];
@@ -171,58 +181,41 @@ var blobs = svg.selectAll('.blob').data(data)
 
 // Year text Code goes below here
 
-// To Do!!!:On click function for the years
+var years = [
+{year:2003, x:"50px", y:"50px", t_year_key:100},
+{year:2004, x:"150px", y:"50px", t_year_key:200},
+{year:2005, x:"250px", y:"50px", t_year_key:300},
+{year:2006, x:"350px", y:"50px", t_year_key:400},
+{year:2007, x:"450px", y:"50px", t_year_key:500},
+{year:2008, x:"550px", y:"50px", t_year_key:600},
+{year:2009, x:"650px", y:"50px", t_year_key:700},
+{year:2010, x:"750px", y:"50px", t_year_key:800},
+{year:2011, x:"850px", y:"50px", t_year_key:900},
+{year:2012, x:"950px", y:"50px", t_year_key:1000},
+{year:2013, x:"1050px", y:"50px", t_year_key:1100},
+{year:2014, x:"1150px", y:"50px", t_year_key:1200},
+];
 
-svg.append("text")
-    .attr("x", "50px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2003");
+// Year headings with on click function for the years
+text = d3.select("svg").selectAll("text")
+        .data(years)
+        .enter()
+        .append("text")
+        .text(function(d) { return d.year })
+        .attr("x", function(d) { return d.x })
+        .attr("y", function(d) { return d.y })
+        .attr("dy", ".35em")
+        .on('click', function(d)
+{
+    year_key = d.t_year_key;
+    d3.json("annual_values.json", function(json) {
+    data = json;
+    counties.selectAll("path")
+        .attr("class", quantize);
+        });
+    d3.selectAll('rect')
+    .transition().duration([1000]).ease("elastic")
+    .attr('x', function(d) {return (year_key-100)})
+});
 
-svg.append("text")
-    .attr("x", "150px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2004");
 
-svg.append("text")
-    .attr("x", "250px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2005");
-
-svg.append("text")
-    .attr("x", "350px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2006");
-
-svg.append("text")
-    .attr("x", "450px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2007");
-
-svg.append("text")
-    .attr("x", "550px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2008");
-
-svg.append("text")
-    .attr("x", "650px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2009");
-
-svg.append("text")
-    .attr("x", "750px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2010");
-
-svg.append("text")
-    .attr("x", "850px")
-    .attr("y", "50px")
-    .attr("dy", ".35em")
-    .text("2011");

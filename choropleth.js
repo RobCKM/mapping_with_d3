@@ -33,7 +33,12 @@ d3.json("annual_values.json", function(json) {
       .attr("class", quantize)
       .attr("id", function(d){return d.properties.id})
       // .on("mouseover", function(d) { console.log(d.properties.id + " " + data[d.properties.id][year]); });
-      .on("mouseover", function(d) { console.log(d.properties.id + " " + data[d.properties.id][year]); });
+      .on("mouseover", function(d) {
+        d3.select(this).attr('class', 'highlight');
+      })                  
+      .on("mouseout", function(d) {
+        d3.select(this).attr("class", quantize);
+      });
 
 });
  
